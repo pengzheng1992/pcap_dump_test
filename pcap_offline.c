@@ -33,22 +33,23 @@ void getPacket(u_char * arg, const struct pcap_pkthdr * pkthdr, const u_char * p
 {  	
     ++cnt;
 	printf("cnt: %d\n", cnt);
-  pcap_dump((u_char*)arg, pkthdr, packet);  
-/* 
-  printf("Number of bytes: %d\n", pkthdr->caplen);  
-  printf("Recieved time: %s", ctime((const time_t *)&pkthdr->ts.tv_sec));   
-    
-  for(bpf_u_int32 i=0; i<pkthdr->len; ++i)  
-  {  
-    printf(" %02x", packet[i]);  
-    if( (i + 1) % 16 == 0 )  
-    {  
-      printf("\n");  
-    }  
-  }  
-    
-  printf("\n\n");  
-*/
+	if (cnt % 2 == 1) {
+		pcap_dump((u_char*)arg, pkthdr, packet);  
+
+		printf("Number of bytes: %d\n", pkthdr->caplen);  
+		printf("Recieved time: %s", ctime((const time_t *)&pkthdr->ts.tv_sec));   
+		  
+		for(bpf_u_int32 i=0; i<pkthdr->len; ++i)  
+		{  
+		  printf(" %02x", packet[i]);  
+		  if( (i + 1) % 16 == 0 )  
+		  {  
+		    printf("\n");  
+		  }  
+		}  
+		  
+		printf("\n\n");  
+	}
 }  
 
 void callback(u_char *args, const struct pcap_pkthdr *pcap_header, const u_char *pcap_content) {
@@ -86,7 +87,7 @@ int main(IN int argc, IN char *argv[]) {
 	dumpfile = pcap_dump_open(handler, current);  
 
 	// capture the packets
-	pcap_loop(handler, -1, getPacket, (u_char*)dumpfile);
+	pcap_loop(handler, 10, getPacket, (u_char*)dumpfile);
     
 	printf("cnt: %d\n", cnt);
 
